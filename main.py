@@ -47,11 +47,11 @@ class MusicPlayer:
         choice = random.choice(self.music)
         self.play(choice['src'][0])
         print(f"Lejátszott zene: Cím:{choice['title'][0]} - Szerző:{choice['author'][0]}")
-        time.sleep(20)
+        time.sleep(WAITTIME)
         self.stop()
         while True:
-            choice_author = input("Sikerült eltalálni a szerzőt? (I/N)\n ").strip().lower()
-            choice_title = input("Sikerült eltalálni a címet? (I/N)\n").strip().lower()
+            choice_author = input("Adja meg a szerzőt el a taláták. (I/N) ").lower()
+            choice_title = input("Adja meg a címet el a taláták. (I/N) ").lower()
             if choice_author in ["i", "n"] and choice_title in ["i", "n"]:
                 break
             else:
