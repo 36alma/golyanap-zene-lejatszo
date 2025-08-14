@@ -137,6 +137,12 @@ class TeamClass:
             return False
 
 class MainClass:
+    def __init__(self):
+        self.use_play_music = True
+        self.use_pont = True
+        self.team_name = None
+        self.team_select = False
+        
     def main(self):
         while True:
             self.menu()
