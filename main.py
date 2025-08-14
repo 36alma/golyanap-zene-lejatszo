@@ -146,9 +146,9 @@ class MainClass:
     def main(self):
         while True:
             self.menu()
-            self.choice = input("Válassz egy lehetőséget: ").strip()
-            if self.choice == "1":
-                while len(Player.music) > 0:
+            self.choice = int(input("Válassz egy lehetőséget: ").strip())
+            if self.choice == 1 and self.team_select == True:
+                while len(Player.music) > 0 and self.use_play_music == True:
                     Player.main()
             elif self.choice == "2":
                 Pont.pontcall(Player.team)
