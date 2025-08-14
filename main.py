@@ -96,16 +96,20 @@ class PontClass:
 
     def pontcall(self,lista):
         self.pont = 0
+        x = 0
         for item in lista:
-            self.choice_author = item.choice_author
-            self.choice_title = item.choice_title
+            self.choice_author = item["choice_author"]
+            self.choice_title = item["choice_title"]
             if self.choice_author == True and self.choice_title == True:
                 self.pont += 2
             elif self.choice_author == True or self.choice_title == True:
                 self.pont += 1
             else:
                 self.pont += 0
-        return self.pont
+            x += 1
+        self.szazalek = self.pont / self.maxpont * 100
+        self.pontja = int(self.szazalek * 0.2)
+        return self.pontja
 
 class MusicClass:
     def __init__(self):
