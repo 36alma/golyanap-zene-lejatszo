@@ -173,10 +173,15 @@ class MainClass:
                 print("Helytelen menü pont")
                 continue
     def menu(self):
-        print(f"{BOLD}{UNDERLINE}{CYAN}=== Főmenü ==={RESET}")
-        print(f"{GREEN}1.{RESET} {BOLD}Indítás a zenéket.{RESET}")
-        print(f"{YELLOW}2.{RESET} {UNDERLINE}Pontszámok megtekintése.{RESET}")
-        print(f"{RED}0.{RESET} Kilépés.")
+            print(f"{BOLD}{UNDERLINE}{CYAN}=== Főmenü ==={RESET}")
+            if self.use_play_music == False:
+                x = STRIKETHROUGH
+            elif self.use_play_music == True:
+                x = RESET
+            print(f"{x}{GREEN}1.{RESET}{x} {BOLD}Indítás a zenéket.{RESET}")
+            print(f"{YELLOW}2.{RESET} {UNDERLINE}Pontszámok megtekintése.{RESET}")
+            print(f"{BLUE}3.{RESET} Csapat kiválasztása.{RESET}")
+            print(f"{RED}0.{RESET} Kilépés.")
 
 if __name__ == "__main__":
     Player = MusicPlayer()
