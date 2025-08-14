@@ -125,6 +125,17 @@ class MusicClass:
         reszek = item.split(splite_id)
         return reszek
 
+class TeamClass:
+    def __init__(self):
+        self.team = ["Barna","Fehér","Fekete","Lila","Narancssárga","Piros","Rózsaszín","Sötétzöld","Világoskék"]
+    def checkteam(self,inputteam):
+        inputteam = self.team[int(inputteam)-1]
+        if inputteam in self.team:
+            Main.team_name = inputteam
+            return True
+        else:
+            return False
+
 class MainClass:
     def main(self):
         while True:
