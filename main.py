@@ -150,9 +150,22 @@ class MainClass:
             if self.choice == 1 and self.team_select == True:
                 while len(Player.music) > 0 and self.use_play_music == True:
                     Player.main()
-            elif self.choice == "2":
-                Pont.pontcall(Player.team)
-            elif self.choice == "0":
+                self.use_play_music = False
+            elif self.choice == 1 and self.use_play_music == False:
+                print("Sajnos a funkció elindításához újra kell inditani a szofvert.")
+            elif self.choice == 2 and self.use_pont == True and self.team_select == True:
+                pont = Pont.pontcall(Player.team)
+                print(f"Pontszám: {pont}")
+                self.use_pont = False
+            elif self.choice == 2 and self.use_pont == False:
+                print(f"Pontszám: {pont}")
+            elif self.choice == 3:
+                print("Csapatok:")
+                for i in range(len(Team.team)):
+                    print(f"{i+1}. {Team.team[i]}")
+                self.team_select = Team.checkteam(input("Adja meg a csapatot."))
+                print(f"A kiválasztott csapat: {Main.team_name}")
+            elif self.choice == 0:
                 break
             else:
                 print("Helytelen menü pont")
