@@ -15,6 +15,9 @@ YELLOW = "\033[33m"
 CYAN = "\033[36m"
 WHITE = "\033[37m"
 UNDERLINE = "\033[4m"
+STRIKETHROUGH = "\033[9m"
+WAITTIME = 20
+
 class MusicPlayer:
     def __init__(self):
         self.files = files
