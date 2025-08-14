@@ -90,6 +90,10 @@ class AnswerClass:
 class PontClass:
     def __init__(self):
         self.pont = 0
+        self.pontja = 0
+        self.szazalek = 0
+        self.maxpont = int(len(Player.team)*2)
+
     def pontcall(self,lista):
         self.pont = 0
         for item in lista:
