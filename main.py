@@ -184,10 +184,14 @@ class MainClass:
             print(f"{RED}0.{RESET} Kilépés.")
 
 if __name__ == "__main__":
-    Player = MusicPlayer()
-    Music = MusicClass()
-    Answer = AnswerClass()
-    Pont = PontClass()
-    Main = MainClass()
-    Player.forindex()
-    Main.main()
+    try:
+        Player = MusicPlayer()
+        Music = MusicClass()
+        Answer = AnswerClass()
+        Pont = PontClass()
+        Main = MainClass()
+        Team = TeamClass()
+        Player.forindex()
+        Main.main()
+    except Exception as e:
+        print(f"Hiba történt: {e}")
