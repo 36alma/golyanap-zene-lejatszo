@@ -167,8 +167,11 @@ class MainClass:
                 print(f"A kiválasztott csapat: {Main.team_name}")
             elif self.choice == 0:
                 break
+            elif self.team_select != True:
+                print("Nincs kiválasztott csapat.")
             else:
                 print("Helytelen menü pont")
+                continue
     def menu(self):
         print(f"{BOLD}{UNDERLINE}{CYAN}=== Főmenü ==={RESET}")
         print(f"{GREEN}1.{RESET} {BOLD}Indítás a zenéket.{RESET}")
