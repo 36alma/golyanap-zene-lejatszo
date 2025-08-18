@@ -252,27 +252,25 @@ class MainClass:
         ]
         self.current_idx = 0
         while True:
-            self.menu()
-            self.choice = int(input("Válassz egy lehetőséget: ").strip())
-            if self.choice == 1 and self.team_select == True:
+            choice = self.menu()+1
+            if choice == 1 and self.team_select == True:
                 while len(Player.music) > 0 and self.use_play_music == True:
                     Player.main()
                 self.use_play_music = False
-            elif self.choice == 1 and self.use_play_music == False:
+                self.use_pont = True
+            elif choice == 1 and self.use_play_music == False:
                 print("Sajnos a funkció elindításához újra kell inditani a szofvert.")
-            elif self.choice == 2 and self.use_pont == True and self.team_select == True:
-                pont = Pont.pontcall(Player.team)
-                print(f"Pontszám: {pont}")
-                self.use_pont = False
-            elif self.choice == 2 and self.use_pont == False:
-                print(f"Pontszám: {pont}")
-            elif self.choice == 3:
-                print("Csapatok:")
-                for i in range(len(Team.team)):
-                    print(f"{i+1}. {Team.team[i]}")
-                self.team_select = Team.checkteam(input("Adja meg a csapatot."))
-                print(f"A kiválasztott csapat: {Main.team_name}")
-            elif self.choice == 0:
+            elif choice == 2 and self.use_pont_cache == True and self.team_select == True and self.use_pont == True:
+                self.pont = Pont.pontcall(Player.team)
+                print(f"Pontszám: {self.pont}")
+                self.use_pont_cache = False
+                print(Api.senddata())
+            elif choice == 2 and self.use_pont_cache == False and self.use_pont == True:
+                print(f"Pontszám: {self.pont}")
+                print(Api.senddata())
+            elif choice == 3:
+                self.select_team()
+            elif choice == 4:
                 break
             elif self.team_select != True:
                 print("Nincs kiválasztott csapat.")
