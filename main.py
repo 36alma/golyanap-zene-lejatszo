@@ -235,11 +235,22 @@ class ApiClass:
 class MainClass:
     def __init__(self):
         self.use_play_music = True
-        self.use_pont = True
+        self.use_pont = False
+        self.use_pont_cache = True
         self.team_name = None
         self.team_select = False
+        self.pont: int = None
+        self.startime = datetime.datetime.now().isoformat()
+    
         
     def main(self):
+        self.menu_options = [
+            "Indítás a zenéket",
+            "Pontszámok megtekintése",
+            "Csapat kiválasztás",
+            "Kilépés"
+        ]
+        self.current_idx = 0
         while True:
             self.menu()
             self.choice = int(input("Válassz egy lehetőséget: ").strip())
@@ -269,16 +280,65 @@ class MainClass:
                 print("Helytelen menü pont")
                 continue
     def menu(self):
-            print(f"{BOLD}{UNDERLINE}{CYAN}=== Főmenü ==={RESET}")
-            if self.use_play_music == False:
-                x = STRIKETHROUGH
-            elif self.use_play_music == True:
-                x = RESET
-            print(f"{x}{GREEN}1.{RESET}{x} {BOLD}Indítás a zenéket.{RESET}")
-            print(f"{YELLOW}2.{RESET} {UNDERLINE}Pontszámok megtekintése.{RESET}")
-            print(f"{BLUE}3.{RESET} Csapat kiválasztása.{RESET}")
-            print(f"{RED}0.{RESET} Kilépés.")
+        whiler = True
+        self.availability = [
+            self.team_select,
+            self.use_pont,
+            True,
+            True
+        ]
+        selected = 0
+        current_idx = 0
+            
+        while whiler:
+            # Menü kirajzolása 
+            print("\033c", end="")  # képernyő törlése
+            print("Használd a nyilakat a navigációhoz, Enter a választáshoz.\n")
+            for i, option in enumerate(self.menu_options):
+                if not self.availability[i] and i == current_idx:
+                    print(f"> {RED}{option} (lezárt){RESET}")
+                elif not self.availability[i] and i != current_idx:
+                    print(f" {RED}{option} (lezárt){RESET}")
+                elif i == current_idx:
+                    print(f"> {GREEN}{option}{RESET}")
+                else:
+                    print(f"  {option}")
+                
+            key = readchar.readkey()
+            if key == readchar.key.UP:
+                current_idx = (current_idx - 1) % len(self.menu_options)
+            elif key == readchar.key.DOWN:
+                current_idx = (current_idx + 1) % len(self.menu_options)
+            elif key == readchar.key.ENTER:
+                whiler = False
+                return current_idx
+                
 
+    def select_team(self):
+        whiler = True
+        current_idx = 0
+        while whiler:
+            # Menü kirajzolása 
+            print("\033c", end="")  # képernyő törlése
+            print("Használd a nyilakat a navigációhoz, Enter a választáshoz.\n")
+            for i, option in enumerate(Team.team):
+                if i == current_idx:
+                    print(f"> {GREEN}{option}{RESET}")
+                else:
+                    print(f"  {option}")
+                
+            key = readchar.readkey()
+            if key == readchar.key.UP:
+                current_idx = (current_idx - 1) % len(Team.team)
+            elif key == readchar.key.DOWN:
+                current_idx = (current_idx + 1) % len(Team.team)
+            elif key == readchar.key.ENTER:
+                whiler = False
+                Main.team_select = Team.checkteam(current_idx+1)
+                print(Main.team_select)
+
+            
+            
 if __name__ == "__main__":
     try:
         Player = MusicPlayer()
