@@ -1,2 +1,7 @@
 playsound
 pygame
+datetime
+requests
+dotenv
+cryptography
+readchar
