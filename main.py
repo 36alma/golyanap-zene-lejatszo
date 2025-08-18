@@ -75,7 +75,6 @@ class MusicPlayer:
         input("A következő nyomj egy entert!")
         index = self.music.index(choice)
         self.music.pop(index)
-
 class AnswerClass:   
     def __init__(self, choice=None, choice_author=None, choice_title=None):
         self.choice = []
@@ -95,15 +94,13 @@ class AnswerClass:
         else:
             self.choice_title = False
         return self
-
 class PontClass:
     def __init__(self):
         self.pont = 0
         self.pontja = 0
         self.szazalek = 0
-        self.maxpont = int(len(Player.team)*2)
-
     def pontcall(self,lista):
+        self.maxpont = int(len(Player.team)*2)
         self.pont = 0
         x = 0
         for item in lista:
@@ -119,7 +116,6 @@ class PontClass:
         self.szazalek = self.pont / self.maxpont * 100
         self.pontja = int(self.szazalek * 0.2)
         return self.pontja
-
 class MusicClass:
     def __init__(self):
         self.music_author = []
@@ -144,7 +140,6 @@ class MusicClass:
     def split(self, item,splite_id):
         reszek = item.split(splite_id)
         return reszek
-
 class TeamClass:
     def __init__(self):
         self.team = ["Barna","Fehér","Fekete","Lila","Narancssárga","Piros","Rózsaszín","Sötétzöld","Világoskék"]
@@ -286,6 +281,7 @@ class MainClass:
             else:
                 print("Helytelen menü pont")
                 continue
+
     def menu(self):
         whiler = True
         self.availability = [
@@ -348,6 +344,7 @@ class MainClass:
             
 if __name__ == "__main__":
     try:
+        dotenv.load_dotenv()
         Player = MusicPlayer()
         Music = MusicClass()
         Answer = AnswerClass()
@@ -355,6 +352,7 @@ if __name__ == "__main__":
         Main = MainClass()
         Team = TeamClass()
         Player.forindex()
+        Api = ApiClass()
         Main.main()
     except Exception as e:
         print(f"Hiba történt: {e}")
