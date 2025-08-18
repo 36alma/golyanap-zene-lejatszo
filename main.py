@@ -146,7 +146,92 @@ class TeamClass:
             return True
         else:
             return False
+class ApiClass:
+    def __init__(self):
+        self.url = os.getenv("API_URL", "YOUR_API_URL")
+        self.api_key = os.getenv("API_KEY", "your_api_key_here")
+        
+        with open("keys/public_key.pem", "rb") as f:
+            self.public_key = serialization.load_pem_public_key(f.read())
+        self.token = None
+        if self.token:
+            self.headers = {
+                "Authorization": f"Bearer {self.token}"
+            }
+        else:
+            self.headers = {}
 
+    def main_handel(self):
+        data = {
+            "team": Main.team_name,       
+            "point": Main.pont,
+            "startime": Main.startime,
+            "endtime": datetime.datetime.now().isoformat(),
+            "zenevalaszok": Player.team
+        }
+        return data
+
+    def auth(self):
+        user = os.getenv("API-USER", "YOUR_API_USER")
+        password = os.getenv("API-PASSWORD", "YOUR_API_PASSWORD")
+        
+        # AES kulcs generálása
+        original_key = os.getenv("AES_KEY", "your_aes_key_here").encode()
+        fernet_key = base64.urlsafe_b64encode(hashlib.sha256(original_key).digest())
+        cipher_suite = Fernet(fernet_key)
+
+        # Felhasználói adatok titkosítása
+        data = {"username": user, "password": password}
+        data_str = json.dumps(data, ensure_ascii=False)
+        encrypted_data = cipher_suite.encrypt(data_str.encode('utf-8'))
+
+        # AES kulcs titkosítása RSA-val
+        encrypted_aes_key = self.public_key.encrypt(
+            fernet_key,   
+            padding.OAEP(
+                mgf=padding.MGF1(algorithm=hashes.SHA256()),
+                algorithm=hashes.SHA256(),
+                label=None
+            )
+        )
+        encrypted_aes_key_b64 = base64.b64encode(encrypted_aes_key).decode('utf-8')
+        encrypted_data_b64 = base64.b64encode(encrypted_data).decode('utf-8')
+
+        try:
+            response = requests.post(
+                f"{self.url}/api/auth",
+                json={
+                    "key": encrypted_aes_key_b64,
+                    "data": encrypted_data_b64
+                },
+                timeout=30
+            )
+            if response.status_code == 200:
+                response_data = response.json()
+                self.headers = {
+                "Authorization": f"Bearer {response_data.get("token")}"
+            }
+                return response_data.get("token")
+            else:
+                print(f"❌ Hiba: {response.status_code} - {response.text}")
+        except Exception as e:
+            print(f"❌ Hiba: {e}")
+        return None
+
+    def senddata(self):
+        self.token = self.auth()
+        data = self.main_handel()
+        try:
+            response = requests.post(
+                f"{self.url}/api/json",
+                headers=self.headers,
+                json=data,
+                timeout=30
+            )
+            return response
+        except Exception as e:
+            print(f"❌ Hiba: {e}")
+            return None
 class MainClass:
     def __init__(self):
         self.use_play_music = True
