@@ -4,6 +4,15 @@ import random
 import json
 import pygame
 import time
+import datetime
+import requests
+import dotenv
+import base64, hashlib
+from cryptography.hazmat.primitives.asymmetric import rsa, padding
+from cryptography.hazmat.primitives import serialization, hashes
+from cryptography.fernet import Fernet
+import readchar
+
 filesfolder = os.path.join(os.path.dirname(__file__), 'zene')
 files = os.listdir(filesfolder)
 RESET = "\033[0m"
