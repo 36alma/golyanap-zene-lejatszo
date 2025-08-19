@@ -1,0 +1,36 @@
+Copyright (c) 2025 36alma
+
+All Rights Reserved.
+
+LICENSE NOTICE:
+
+1. PURPOSE:
+   This source code is provided strictly for educational purposes only. 
+   Under no circumstances may this code, or any derivative works, be used
+   for commercial purposes, including but not limited to: selling, 
+   licensing, sublicensing, or incorporation into paid products or services.
+
+2. RESTRICTIONS:
+   You may NOT, without explicit written permission from the copyright holder:
+   - Reproduce, copy, or distribute this code in any form.
+   - Modify, adapt, translate, or create derivative works based on this code.
+   - Use this code to train AI models, machine learning systems, or any
+     automated data analysis tool.
+   - Use this code for any commercial, profit-driven, or public deployment.
+
+3. LEGAL CONSEQUENCES:
+   Any violation of these terms may result in civil and/or criminal legal action.
+   The copyright holder reserves the right to seek full legal remedies,
+   including injunctions, damages, and attorney fees.
+
+4. ACCEPTANCE OF TERMS:
+   By accessing, viewing, or using this code, you agree to comply with all
+   the restrictions outlined in this license. Non-compliance will be considered
+   a breach of copyright law.
+
+5. CONTACT:
+   For any inquiries or to request permission for use beyond educational purposes,
+   please contact the copyright holder at: 36alma@vaultdrive.eu.
+
+This license is intentionally strict to protect the author's intellectual property
+and ensure that this work remains solely for educational and non-commercial use.
