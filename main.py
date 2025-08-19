@@ -12,6 +12,8 @@ from cryptography.hazmat.primitives.asymmetric import rsa, padding
 from cryptography.hazmat.primitives import serialization, hashes
 from cryptography.fernet import Fernet
 import readchar
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 filesfolder = os.path.join(os.path.dirname(__file__), 'zene')
 files = os.listdir(filesfolder)
@@ -25,7 +27,7 @@ CYAN = "\033[36m"
 WHITE = "\033[37m"
 UNDERLINE = "\033[4m"
 STRIKETHROUGH = "\033[9m"
-WAITTIME = 20
+WAITTIME = 1
 
 class MusicPlayer:
     def __init__(self):
@@ -55,26 +57,65 @@ class MusicPlayer:
         random.shuffle(self.music)
         choice = random.choice(self.music)
         self.play(choice['src'][0])
-        print(f"Lejátszott zene: Cím:{choice['title'][0]} - Szerző:{choice['author'][0]}")
-        time.sleep(WAITTIME)
-        self.stop()
-        while True:
-            choice_author = input("Adja meg a szerzőt el a taláták. (I/N) ").lower()
-            choice_title = input("Adja meg a címet el a taláták. (I/N) ").lower()
-            if choice_author in ["i", "n"] and choice_title in ["i", "n"]:
-                break
-            else:
-                print("Érvénytelen válasz. Kérlek, válaszolj 'I' vagy 'N'!")
-        obj = AnswerClass(choice, choice_author, choice_title)
-        classes = obj.main()
+        choice_author, choice_title = self.zene_talalat(choice['title'][0], choice['author'][0])
         self.team.append(dict(
-            choice=classes.choice,
-            choice_author=classes.choice_author,
-            choice_title=classes.choice_title
+            choice=choice,
+            choice_author=choice_title,
+            choice_title=choice_title
         ))
-        input("A következő nyomj egy entert!")
         index = self.music.index(choice)
         self.music.pop(index)
+    def zene_talalat(self, cim, szerzo):
+        os.system('cls' if os.name == 'nt' else 'clear')
+        def header():
+            Main.show_header()
+        # Lejátszott zene információ
+            print("🎶 Most játszódik:")
+            print("┌" + "─" * 56 + "┐")
+            print(f"│ 🎵 Cím: {cim} │")
+            print(f"│ 👤 Szerző: {szerzo} │") 
+            print("└" + "─" * 56 + "┘")
+            print()
+        header()
+        time.sleep(WAITTIME)
+        self.stop()
+        def nyilak_valasztas(options, prompt):
+            idx = 0
+            while True:
+                header()
+                print(prompt)
+                for i, option in enumerate(options):
+                    prefix = "➡ " if i == idx else "   "
+                    print(f"{prefix}{option}")
+                key = readchar.readkey()
+                if key == readchar.key.UP:
+                    idx = (idx - 1) % len(options)
+                elif key == readchar.key.DOWN:
+                    idx = (idx + 1) % len(options)
+                elif key == readchar.key.ENTER:
+                    return idx
+        szerzo_idx = nyilak_valasztas(["Igen, tudták ki a szerző", "Nem, nem tudák"], "❓ Felismerták a szerző nevét?")
+        choice_author = "I" if szerzo_idx == 0 else "N"
+        cim_idx = nyilak_valasztas(["Igen, tudák mi a cím", "Nem, nem tudák"], "❓ Felismerték a dal címét?")
+        choice_title = "I" if cim_idx == 0 else "N"
+        os.system('cls' if os.name == 'nt' else 'clear')
+        header()
+        print("📋 Az Ön válaszai:")
+        print("┌" + "─" * 56 + "┐")
+        szerzo_szoveg = "✅ Tudja" if choice_author == "I" else "❌ Nem tudja"
+        cim_szoveg = "✅ Tudja" if choice_title == "I" else "❌ Nem tudja"
+        print(f"│ 👤 Szerző: {szerzo_szoveg:<45} │")
+        print(f"│ 🎵 Cím: {cim_szoveg:<48} │")
+        print("└" + "─" * 56 + "┘")
+        print()
+        
+        print("⏳ Folytatás...")
+        input("Nyomjon Enter-t...")
+
+        szerzo_talalt = choice_author == "I"
+        cim_talalt = choice_title == "I"
+        return szerzo_talalt, cim_talalt
+
 class AnswerClass:   
     def __init__(self, choice=None, choice_author=None, choice_title=None):
         self.choice = []
@@ -84,15 +125,6 @@ class AnswerClass:
             self.choice.append(choice)
     
     def main(self):
-        if self.choice_author and self.choice_author[0] == "i":
-            self.choice_author = True
-        else:
-            self.choice_author = False
-            
-        if self.choice_title and self.choice_title[0] == "i":
-            self.choice_title = True
-        else:
-            self.choice_title = False
         return self
 class PontClass:
     def __init__(self):
@@ -154,7 +186,8 @@ class ApiClass:
     def __init__(self):
         self.url = os.getenv("API_URL", "YOUR_API_URL")
         self.api_key = os.getenv("API_KEY", "your_api_key_here")
-        
+        self.ssl = os.getenv("API_SSL",False).lower() in ("true", "1","yes","y")
+        self.ssl_context = ('keys/client.crt', 'keys/client-key.pem') if self.ssl else None
         with open("keys/public_key.pem", "rb") as f:
             self.public_key = serialization.load_pem_public_key(f.read())
         self.token = None
@@ -204,10 +237,12 @@ class ApiClass:
         try:
             response = requests.post(
                 f"{self.url}/api/auth",
+                cert=self.ssl_context,
                 json={
                     "key": encrypted_aes_key_b64,
                     "data": encrypted_data_b64
                 },
+                verify=False,
                 timeout=30
             )
             if response.status_code == 200:
@@ -225,11 +260,15 @@ class ApiClass:
     def senddata(self):
         self.token = self.auth()
         data = self.main_handel()
+        with open("data.json", "w",encoding="utf-8") as f:
+            json.dump(data, f, indent=4, ensure_ascii=False)
         try:
             response = requests.post(
                 f"{self.url}/api/json",
                 headers=self.headers,
                 json=data,
+                cert=self.ssl_context,
+                verify=False,
                 timeout=30
             )
             return response
@@ -266,12 +305,10 @@ class MainClass:
                 print("Sajnos a funkció elindításához újra kell inditani a szofvert.")
             elif choice == 2 and self.use_pont_cache == True and self.team_select == True and self.use_pont == True:
                 self.pont = Pont.pontcall(Player.team)
-                print(f"Pontszám: {self.pont}")
                 self.use_pont_cache = False
                 print(Api.senddata())
             elif choice == 2 and self.use_pont_cache == False and self.use_pont == True:
-                print(f"Pontszám: {self.pont}")
-                print(Api.senddata())
+                api_repost = Api.senddata()
             elif choice == 3:
                 self.select_team()
             elif choice == 4:
@@ -296,7 +333,7 @@ class MainClass:
         while whiler:
             # Menü kirajzolása 
             print("\033c", end="")  # képernyő törlése
-            print("Használd a nyilakat a navigációhoz, Enter a választáshoz.\n")
+            self.show_header()
             for i, option in enumerate(self.menu_options):
                 if not self.availability[i] and i == current_idx:
                     print(f"> {RED}{option} (lezárt){RESET}")
@@ -323,7 +360,7 @@ class MainClass:
         while whiler:
             # Menü kirajzolása 
             print("\033c", end="")  # képernyő törlése
-            print("Használd a nyilakat a navigációhoz, Enter a választáshoz.\n")
+            self.show_header()
             for i, option in enumerate(Team.team):
                 if i == current_idx:
                     print(f"> {GREEN}{option}{RESET}")
@@ -339,9 +376,38 @@ class MainClass:
                 whiler = False
                 Main.team_select = Team.checkteam(current_idx+1)
                 print(Main.team_select)
+    
 
-            
-            
+    def show_header(self):
+        """Egységes menü header megjelenítése"""
+        # Képernyő tisztítása
+        import os
+        os.system('cls' if os.name == 'nt' else 'clear')
+        
+        # Szép header keret
+        print("╔" + "═" * 58 + "╗")
+        print("║" + " " * 22 + "🎮 ZENE MENÜ 🎮" + " " * 21 + "║")
+        print("╠" + "═" * 58 + "╣")
+        
+        # Csapatnév és pontszám megjelenítése
+        team_text = f"Csapat: {Main.team_name}" if Main.team_name else "Csapat: --"
+        if self.pont is not None:
+            pont_text = f"Pontszám: {self.pont}"
+        else:
+            pont_text = "Pontszám: --"
+        
+        # Bal oldal: csapatnév, jobb oldal: pontszám
+        spacing = 58 - len(team_text) - len(pont_text)
+        print("║" + team_text + " " * spacing + pont_text + "║")
+        print("╠" + "═" * 58 + "╣")
+        
+        # Navigációs útmutató
+        nav_text = "Használd a nyilakat a navigációhoz, Enter a választáshoz"
+        nav_padding = (58 - len(nav_text)) // 2
+        print("║" + " " * nav_padding + nav_text + " " * (58 - nav_padding - len(nav_text)) + "║")
+        print("╚" + "═" * 58 + "╝")
+        print()  # Üres sor a menü opciók előtt
+                      
 if __name__ == "__main__":
     try:
         dotenv.load_dotenv()
