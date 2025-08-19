@@ -147,7 +147,10 @@ A `keys/` mappában legyenek a tanúsítványok:
 
 ## Licenc
 
-Ez a projekt kizárólag oktatási célokra használható, kereskedelmi felhasználás tilos! Részletek a LICENSE.txt-ben.
+A projekt rootjában található `LICENSE.md` fájl fontos információkat tartalmaz a használatról, érdemes elolvasni, és mindenki tudomásul veszi a feltételeket, ha használja vagy felhasználja a projektet.  
+
+A projekt **AI-elemeket is tartalmaz**.
+
 
 ---
 
