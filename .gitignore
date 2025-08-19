@@ -1,3 +1,5 @@
 zene
 .env
 keys/*.pem
+*key
+*crt
